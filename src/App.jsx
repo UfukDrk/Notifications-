@@ -1,34 +1,64 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useState } from "react";
+import notificationData from "./notifications";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+function Notification(props) {
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <div className="notification">
+      {props.children}
+      <button onClick={props.onClear}>Clear</button>
     </div>
-  )
+  );
 }
 
-export default App
+function App() {
+  const [notifications, setNotifications] = useState(notificationData);
+  const [darkMode, setDarkMode] = useState(false);
+
+  function clearNotification(id) {
+    const updatedNotifications = notifications.filter(
+      (notification) => notification.id !== id,
+    );
+
+    setNotifications(updatedNotifications);
+  }
+
+  function clearAllNotifications() {
+    setNotifications([]);
+  }
+
+  function modeHandler() {
+    setDarkMode(!darkMode);
+  }
+
+  return (
+    <div className={darkMode ? "dark" : "light"}>
+      <div className="content">
+        <h1>Notifications</h1>
+
+        <button onClick={modeHandler}>
+          {darkMode ? "Light Mode" : "Dark Mode"}
+        </button>
+
+        <p>Notifications: {notifications.length}</p>
+
+        <button onClick={clearAllNotifications}>Clear All</button>
+
+        {notifications.map((notification) => {
+          return (
+            <Notification
+              key={notification.id}
+              onClear={() => clearNotification(notification.id)}
+            >
+              <p>ID: {notification.id}</p>
+              <h2>{notification.name}</h2>
+              <p>{notification.message}</p>
+            </Notification>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export default App;
